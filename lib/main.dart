@@ -46,20 +46,22 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
     }
   }
 
+  //function for adding contacts
   void _addContact() async {
+    //go to the Add Contact Page when the button for add contact is pushed
     final newContact = await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => AddContactPage()),
     );
     if (newContact != null) {
-      await newContact.insert();
-      _fetchContacts();
+      await newContact.insert(); //add new contact
+      _fetchContacts(); //refresh contact list
     }
   }
 
   void _deleteContact(Contact contact) async {
-    await contact.delete();
-    _fetchContacts();
+    await contact.delete(); //delete existing contact
+    _fetchContacts(); //refresh the contact list
   }
 
   @override
@@ -113,18 +115,7 @@ class ContactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(contact.displayName),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {
-            onDelete(contact);
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ),
+    appBar: AppBar(title: Text(contact.displayName)),
     body: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -150,18 +141,34 @@ class ContactPage extends StatelessWidget {
               'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}',
             ),
           ),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                onDelete(contact);
+                Navigator.pop(context);
+              },
+              child: const Text('Delete Contact'),
+            ),
+          ),
         ],
       ),
     ),
   );
 }
 
+//page where user can add new contact
 class AddContactPage extends StatefulWidget {
   @override
   _AddContactPageState createState() => _AddContactPageState();
 }
 
 class _AddContactPageState extends State<AddContactPage> {
+  //store input values
   final _formKey = GlobalKey<FormState>();
   String firstName = '';
   String lastName = '';
@@ -169,6 +176,7 @@ class _AddContactPageState extends State<AddContactPage> {
   String email = '';
   File? _image;
 
+  //open camera to pick image
   Future _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.camera,
@@ -178,8 +186,10 @@ class _AddContactPageState extends State<AddContactPage> {
     }
   }
 
+  //function for saving contact
   void _saveContact() async {
     if (_formKey.currentState!.validate()) {
+      //create new contact and return it
       final newContact =
           Contact()
             ..name.first = firstName
@@ -232,7 +242,7 @@ class _AddContactPageState extends State<AddContactPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveContact,
-                child: const Text('Save Contact'),
+                child: const Text('Add Contact'),
               ),
             ],
           ),
